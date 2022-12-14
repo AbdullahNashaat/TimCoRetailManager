@@ -62,4 +62,7 @@
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="PublishLocationss" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="PublishLocationss\TRMData.publish.xml" />
+  </ItemGroup>
 </Project>
