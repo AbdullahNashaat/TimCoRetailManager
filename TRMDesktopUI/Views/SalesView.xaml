@@ -30,7 +30,7 @@
         <!-- Coulumn 0 -->
         <TextBlock Text="Items" Grid.Row="1" Grid.Column="0"/>
         <ListBox x:Name="Products" Grid.Row="2" Grid.Column="0" 
-                 MinWidth="200" MinHeight="150">
+                 MinWidth="200" MinHeight="150" SelectedItem="{Binding SelectedProduct}" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding ProductName}"/>
@@ -50,7 +50,13 @@
         <!-- Coulumn 2 -->
         <TextBlock Text="Cart" Grid.Row="1" Grid.Column="2"/>
         <ListBox x:Name="Cart" Grid.Row="2" Grid.Column="2" 
-                 MinWidth="200" MinHeight="150"/>
+                 MinWidth="200" MinHeight="150">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding DisplayText}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
         <DockPanel Grid.Row="3" Grid.Column="2">
             <TextBlock Text="SubTotal" Margin="0 0 15 0"/>
             <TextBlock x:Name="SubTotal" Text="0.00$" TextAlignment="Right"/>
