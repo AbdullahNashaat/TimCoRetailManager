@@ -9,17 +9,20 @@ using TRMDesktopUI.Library.Api.ProductEndPoint;
 using TRMDesktopUI.Library.Models;
 using TRMDesktopUI.Library.Helpers;
 using System.Globalization;
+using TRMDesktopUI.Library.Api;
 
 namespace TRMDesktopUI.ViewModels
 {
     public class SalesViewModel : Screen
     {
         private IProductEndPoint _productEndPoint;
+        private ISaleEndPoint _saleEndPoint;
         private IConfigHelper _configHelper;
-        public SalesViewModel(IProductEndPoint ProductEndPoint,IConfigHelper configHelper)
+        public SalesViewModel(IProductEndPoint ProductEndPoint,IConfigHelper configHelper, ISaleEndPoint saleEndPoint)
         {
             _configHelper= configHelper;
             _productEndPoint= ProductEndPoint;
+            _saleEndPoint = saleEndPoint;
         }
 
         protected override async void OnViewLoaded(object view)
@@ -187,6 +190,7 @@ namespace TRMDesktopUI.ViewModels
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
 
         }
         public bool CanRemoveFromCart
@@ -205,6 +209,7 @@ namespace TRMDesktopUI.ViewModels
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
 
         }
         public bool CanCheckOut
@@ -213,14 +218,29 @@ namespace TRMDesktopUI.ViewModels
             {
                 bool output = false;
                 // Make sure somthing in cart
-                
+                if(Cart.Count > 0)
+                {
+                    output = true;
+                }
                 return output;
             }
         }
 
 
-        public void CheckOut()
+        public async Task CheckOut()
         {
+            SaleModel sale= new SaleModel();
+
+            foreach(var item in Cart) 
+            {
+                sale.SaleDetails.Add(new SaleDetailModel
+                {
+                    ProductId = item.Product.Id,
+                    Quantity = item.QuantityInCart
+                }); 
+            }
+
+            await _saleEndPoint.PostSale(sale);
 
         }
 

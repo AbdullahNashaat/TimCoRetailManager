@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using TRMDesktopUI.Helpers;
+using TRMDesktopUI.Library.Api;
 using TRMDesktopUI.Library.Api.ProductEndPoint;
 using TRMDesktopUI.Library.Helpers;
 using TRMDesktopUI.Library.Models;
@@ -29,7 +30,8 @@ namespace TRMDesktopUI
         protected override void Configure()
         {
             _container.Instance(_container)
-                .PerRequest<IProductEndPoint, ProductEndPoint>();
+                .PerRequest<IProductEndPoint, ProductEndPoint>()
+                .PerRequest<ISaleEndPoint,SaleEndPoint>();
 
             _container
                 .Singleton<IWindowManager, WindowManager>()
