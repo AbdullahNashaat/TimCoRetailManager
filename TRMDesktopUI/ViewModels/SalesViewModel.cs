@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TRMDesktopUI.Library.Api.ProductEndPoint;
 using TRMDesktopUI.Library.Models;
 using TRMDesktopUI.Library.Helpers;
+using System.Globalization;
 
 namespace TRMDesktopUI.ViewModels
 {
@@ -91,7 +92,7 @@ namespace TRMDesktopUI.ViewModels
         {
             get 
             {              
-                return CalculateSubTotal().ToString("C"); 
+                return CalculateSubTotal().ToString("C", CultureInfo.CreateSpecificCulture("en-US")); 
             }
            
         }
@@ -128,7 +129,7 @@ namespace TRMDesktopUI.ViewModels
         {
             get
             {                
-                return CalculateTax().ToString("C");
+                return CalculateTax().ToString("C", CultureInfo.CreateSpecificCulture("en-US"));
             }
 
         }
@@ -138,7 +139,7 @@ namespace TRMDesktopUI.ViewModels
             {
                 decimal total = CalculateSubTotal() + CalculateTax();
                 
-                return total.ToString("C");
+                return total.ToString("C", CultureInfo.CreateSpecificCulture("en-US"));
             }
 
         }
