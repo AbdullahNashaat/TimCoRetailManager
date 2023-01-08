@@ -41,6 +41,19 @@ namespace TRMDesktopUI.ViewModels
             var products = _mapper.Map<List<ProductDisplayModel>>(productList);
             Products = new BindingList<ProductDisplayModel>(products);
         }
+        private async Task ResetSalesViewModel()
+        {
+            Cart = new BindingList<CartItemDisplayModel>();
+            // TODO - clear selectedCartItem
+            await LoadProducts();
+            NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
+
+
+        }
+
         private BindingList<ProductDisplayModel>  _products;
 
         public BindingList<ProductDisplayModel> Products
@@ -216,7 +229,7 @@ namespace TRMDesktopUI.ViewModels
                 bool output = false;  
 
                 // Make sure an item is selected
-                if(SelectedCartItem!= null && SelectedCartItem?.Product.QuantityInStock>0) 
+                if(SelectedCartItem!= null && SelectedCartItem?.QuantityInCart>0) 
                 { 
                     output = true;
                 }
@@ -240,6 +253,7 @@ namespace TRMDesktopUI.ViewModels
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanAddToCart);
             NotifyOfPropertyChange(() => CanCheckOut);
 
         }
@@ -272,6 +286,7 @@ namespace TRMDesktopUI.ViewModels
             }
 
             await _saleEndPoint.PostSale(sale);
+            await ResetSalesViewModel();
 
         }
 
