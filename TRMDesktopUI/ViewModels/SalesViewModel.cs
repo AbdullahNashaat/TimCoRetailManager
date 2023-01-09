@@ -12,6 +12,8 @@ using System.Globalization;
 using TRMDesktopUI.Library.Api;
 using AutoMapper;
 using TRMDesktopUI.Models;
+using System.Dynamic;
+using System.Windows;
 
 namespace TRMDesktopUI.ViewModels
 {
@@ -21,19 +23,46 @@ namespace TRMDesktopUI.ViewModels
         private ISaleEndPoint _saleEndPoint;
         private IConfigHelper _configHelper;
         private IMapper _mapper;
+        private  StatusInfoViewModel _status;
+        private  IWindowManager _window;
+
         public SalesViewModel(IProductEndPoint ProductEndPoint,IConfigHelper configHelper,
-            ISaleEndPoint saleEndPoint, IMapper mapper)
+            ISaleEndPoint saleEndPoint, IMapper mapper, StatusInfoViewModel status,IWindowManager window)
         {
             _configHelper= configHelper;
             _productEndPoint= ProductEndPoint;
             _saleEndPoint = saleEndPoint;
             _mapper= mapper;
+            _status = status;
+            _window = window;
         }
 
         protected override async void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
-            await LoadProducts();
+            try
+            {
+                await LoadProducts();
+            }
+            catch (Exception ex)
+            {
+                dynamic settings = new ExpandoObject();
+                settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                settings.ResizeMode = ResizeMode.NoResize;
+                settings.Title = "System Error";
+                TryClose();
+                if (ex.Message== "Unauthorized")
+                {
+                    _status.UpdateMessage("Unauthorized Access", "You do not have permission to ineract with the Sales Form");
+                    _window.ShowDialog(_status, null, settings);
+                }
+                else
+                {
+                    _status.UpdateMessage("Fatal Exception", ex.Message);
+                    _window.ShowDialog(_status, null, settings);
+                }
+                
+            }
         }
         private async Task LoadProducts()
         {
