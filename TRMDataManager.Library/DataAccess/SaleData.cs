@@ -9,14 +9,7 @@ using TRMDataManager.Library.Models;
 namespace TRMDataManager.Library.DataAccess
 {
     public class SaleData
-    {
-        //public List<ProductModel> GetProducts()
-        //{
-        //    SqlDataAccess sql = new SqlDataAccess();
-
-        //    var output = sql.LoadData<ProductModel, dynamic>("dbo.spProduct_GetAll", new { }, "TRMData");
-        //    return output;
-        //}
+    {      
         public void Savesale(SaleModel saleInfo, string cashierId) 
         {
             // TODO: make it SOLID
@@ -97,9 +90,15 @@ namespace TRMDataManager.Library.DataAccess
 
             }
            
+        }
 
-            
+        public List<SaleReportModel> GetSaleReport()
+        {
+            SqlDataAccess  sql= new SqlDataAccess();
 
+            var output = sql.LoadData<SaleReportModel, dynamic>("dbo.spSale_SaleReport", new { }, "TRMData");
+
+            return output;
         }
     }
 }
