@@ -41,11 +41,16 @@ namespace TRMDesktopUI.ViewModels
             }
 
         }
+
         public void ExitApplication()
         {
            TryClose();
         }
 
+        public void UserManagment()
+        {
+            ActivateItem(IoC.Get<UserDisplayViewModel>());
+        }
         public void LogOut()
         {
             _user.ResetUserModel();
