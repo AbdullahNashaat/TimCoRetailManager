@@ -64,23 +64,38 @@ namespace TRMDataManager.Library.DataAccess
             // calculate PurchasePrice, Tax and put them in sale
             sale.Total = sale.SubTotal + sale.Tax;
 
-            // save the sale to DB
+            
 
-            SqlDataAccess sql = new SqlDataAccess();
-
-            sql.SaveData<SaleDBModel>("dbo.spSale_Insert",sale, "TRMData");
-
-            // get sale id
-
-            sale.Id = sql.LoadData<int,dynamic>("dbo.spSale_Loohup", new { sale.CashierId, sale.SaleDate }, "TRMData").FirstOrDefault();
-
-            //finish fill sailDetails
-            foreach (var item in details)
+            
+            using (SqlDataAccess sql = new SqlDataAccess())
             {
-                item.SaleId = sale.Id;
-                //save them to DB
-            sql.SaveData<SaleDetailDBModel>("dbo.spSaleDetail_Insert", item, "TRMData");
+                try
+                {
+                    sql.StartTransaction("TRMData");
+
+                    // save the sale to DB
+                    sql.SaveDataInTransaction<SaleDBModel>("dbo.spSale_Insert", sale);
+
+                    // get sale id
+                    sale.Id = sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_Loohup", new { sale.CashierId, sale.SaleDate }).FirstOrDefault();
+
+                    //finish fill sailDetails
+                    foreach (var item in details)
+                    {
+                        item.SaleId = sale.Id;
+                        //save them to DB
+                        sql.SaveDataInTransaction<SaleDetailDBModel>("dbo.spSaleDetail_Insert", item);
+                    }
+                  
+                }
+                catch 
+                {
+                    sql.RollbackTransaction();
+                    throw;
+                }
+
             }
+           
 
             
 
