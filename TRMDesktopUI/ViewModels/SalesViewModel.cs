@@ -50,18 +50,18 @@ namespace TRMDesktopUI.ViewModels
                 settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 settings.ResizeMode = ResizeMode.NoResize;
                 settings.Title = "System Error";
-                TryClose();
+                
                 if (ex.Message== "Unauthorized")
                 {
                     _status.UpdateMessage("Unauthorized Access", "You do not have permission to ineract with the Sales Form");
-                    _window.ShowDialog(_status, null, settings);
+                    await _window.ShowDialogAsync(_status, null, settings);
                 }
                 else
                 {
                     _status.UpdateMessage("Fatal Exception", ex.Message);
-                    _window.ShowDialog(_status, null, settings);
+                    await _window.ShowDialogAsync(_status, null, settings);
                 }
-                
+                TryCloseAsync();
             }
         }
         private async Task LoadProducts()

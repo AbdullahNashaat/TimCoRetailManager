@@ -97,7 +97,7 @@ namespace TRMDesktopUI.ViewModels
 				// Capture more information about the user
 				await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
 
-				_events.PublishOnUIThread(new LogOnEvent());
+				_events.PublishOnUIThreadAsync(new LogOnEvent());
 				
 			}
 			catch (Exception ex)
