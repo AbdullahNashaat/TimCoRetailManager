@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using System.Runtime.Intrinsics;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +70,7 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 
 app.UseRouting();
 

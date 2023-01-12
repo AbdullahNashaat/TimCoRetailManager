@@ -20,8 +20,8 @@ namespace TRMApi.Controllers
     {
        
         private  ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IConfiguration _config;
+        private  UserManager<IdentityUser> _userManager;
+        private  IConfiguration _config;
 
         public UserController(ApplicationDbContext context,UserManager<IdentityUser> userManager, IConfiguration config)
         {
@@ -83,10 +83,21 @@ namespace TRMApi.Controllers
         [Route("Admin/AddRole")]
         public async Task AddARole(UserRolePairModel pairing)
         {
+            var role = _context.Roles.FirstOrDefault(p => p.Name == pairing.RoleName);
 
-            var user = await _context.Users.FindAsync(pairing.UserId);
-            await _userManager.AddToRoleAsync(user, pairing.RoleName);
-            
+            IdentityUserRole<string> userRole = new IdentityUserRole<string>
+            {
+                RoleId = role.Id,
+                UserId = pairing.UserId
+            };
+
+            _context.UserRoles.Add(userRole);
+            _context.SaveChanges();
+
+            //var user = await _context.Users.FindAsync(pairing.UserId);
+            //await _userManager.AddToRoleAsync(user, pairing.RoleName);
+
+
         }
 
         [Authorize(Roles = "Admin")]
@@ -94,9 +105,23 @@ namespace TRMApi.Controllers
         [Route("Admin/RemoveRole")]
         public async Task RemoveARole(UserRolePairModel pairing)
         {
+            // TODO - send role Id Insted of Role Name
+            
+            
+            var role = _context.Roles.FirstOrDefault(p => p.Name == pairing.RoleName);
 
-            var user = await _context.Users.FindAsync(pairing.UserId);
-            await _userManager.RemoveFromRoleAsync(user, pairing.RoleName);
+            var userRole =  _context.UserRoles
+                .FirstOrDefault(x => x.UserId == pairing.UserId && x.RoleId == role.Id);
+            
+              _context.UserRoles.Remove(userRole);
+            _context.SaveChanges();
+            
+
+            ////var user = await _context.Users.FindAsync(pairing.UserId);
+            ////var result = await _userManager.RemoveFromRoleAsync(user, pairing.RoleName);
+            ////return await UpdateUserAsync(user);
+
+           
 
         }
     }
