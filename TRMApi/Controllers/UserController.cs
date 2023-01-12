@@ -110,8 +110,13 @@ namespace TRMApi.Controllers
             
             var role = _context.Roles.FirstOrDefault(p => p.Name == pairing.RoleName);
 
-            var userRole =  _context.UserRoles
-                .FirstOrDefault(x => x.UserId == pairing.UserId && x.RoleId == role.Id);
+            IdentityUserRole<string> userRole = new IdentityUserRole<string>
+            {
+                RoleId = role.Id,
+                UserId = pairing.UserId
+            };
+            //var userRole =  _context.UserRoles
+            //    .FirstOrDefault(x => x.UserId == pairing.UserId && x.RoleId == role.Id);
             
               _context.UserRoles.Remove(userRole);
             _context.SaveChanges();
