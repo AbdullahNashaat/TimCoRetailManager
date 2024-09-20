@@ -23,16 +23,16 @@ namespace TRMDesktopUI.ViewModels
         private ISaleEndPoint _saleEndPoint;
         private IConfigHelper _configHelper;
         private IMapper _mapper;
-        private  StatusInfoViewModel _status;
-        private  IWindowManager _window;
+        private StatusInfoViewModel _status;
+        private IWindowManager _window;
 
-        public SalesViewModel(IProductEndPoint ProductEndPoint,IConfigHelper configHelper,
-            ISaleEndPoint saleEndPoint, IMapper mapper, StatusInfoViewModel status,IWindowManager window)
+        public SalesViewModel(IProductEndPoint ProductEndPoint, IConfigHelper configHelper,
+            ISaleEndPoint saleEndPoint, IMapper mapper, StatusInfoViewModel status, IWindowManager window)
         {
-            _configHelper= configHelper;
-            _productEndPoint= ProductEndPoint;
+            _configHelper = configHelper;
+            _productEndPoint = ProductEndPoint;
             _saleEndPoint = saleEndPoint;
-            _mapper= mapper;
+            _mapper = mapper;
             _status = status;
             _window = window;
         }
@@ -50,8 +50,8 @@ namespace TRMDesktopUI.ViewModels
                 settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 settings.ResizeMode = ResizeMode.NoResize;
                 settings.Title = "System Error";
-                
-                if (ex.Message== "Unauthorized")
+
+                if (ex.Message == "Unauthorized")
                 {
                     _status.UpdateMessage("Unauthorized Access", "You do not have permission to ineract with the Sales Form");
                     await _window.ShowDialogAsync(_status, null, settings);
@@ -83,16 +83,16 @@ namespace TRMDesktopUI.ViewModels
 
         }
 
-        private BindingList<ProductDisplayModel>  _products;
+        private BindingList<ProductDisplayModel> _products;
 
         public BindingList<ProductDisplayModel> Products
         {
             get { return _products; }
-            set 
+            set
             {
                 _products = value;
                 NotifyOfPropertyChange(() => Products);
-                    
+
             }
         }
 
@@ -101,7 +101,7 @@ namespace TRMDesktopUI.ViewModels
         public BindingList<CartItemDisplayModel> Cart
         {
             get { return _cart; }
-            set 
+            set
             {
                 _cart = value;
                 NotifyOfPropertyChange(() => Cart);
@@ -113,7 +113,7 @@ namespace TRMDesktopUI.ViewModels
         public ProductDisplayModel SelectedProduct
         {
             get { return _selectedProduct; }
-            set 
+            set
             {
                 _selectedProduct = value;
                 NotifyOfPropertyChange(() => SelectedProduct);
@@ -136,13 +136,13 @@ namespace TRMDesktopUI.ViewModels
 
 
 
-        private int _itemQuantity = 1 ;
+        private int _itemQuantity = 1;
 
 
-        public int ItemQuantity 
+        public int ItemQuantity
         {
             get { return _itemQuantity; }
-            set 
+            set
             {
                 _itemQuantity = value;
                 NotifyOfPropertyChange(() => ItemQuantity);
@@ -150,14 +150,14 @@ namespace TRMDesktopUI.ViewModels
             }
         }
 
-       
+
         public string SubTotal
         {
-            get 
-            {              
-                return CalculateSubTotal().ToString("C", CultureInfo.CreateSpecificCulture("en-US")); 
+            get
+            {
+                return CalculateSubTotal().ToString("C", CultureInfo.CreateSpecificCulture("en-US"));
             }
-           
+
         }
 
         private decimal CalculateSubTotal()
@@ -191,7 +191,7 @@ namespace TRMDesktopUI.ViewModels
         public string Tax
         {
             get
-            {                
+            {
                 return CalculateTax().ToString("C", CultureInfo.CreateSpecificCulture("en-US"));
             }
 
@@ -201,7 +201,7 @@ namespace TRMDesktopUI.ViewModels
             get
             {
                 decimal total = CalculateSubTotal() + CalculateTax();
-                
+
                 return total.ToString("C", CultureInfo.CreateSpecificCulture("en-US"));
             }
 
@@ -216,8 +216,8 @@ namespace TRMDesktopUI.ViewModels
                 bool output = false;
                 // Make sure an item is selected
                 // Make sure Quantity is not 0
-                if(ItemQuantity > 0 && SelectedProduct?.QuantityInStock >= ItemQuantity ) 
-                { 
+                if (ItemQuantity > 0 && SelectedProduct?.QuantityInStock >= ItemQuantity)
+                {
                     output = true;
                 }
                 return output;
@@ -228,12 +228,12 @@ namespace TRMDesktopUI.ViewModels
         public void AddToCart()
         {
             CartItemDisplayModel existingItem = Cart.FirstOrDefault(x => x.Product == SelectedProduct);
-            if (existingItem != null) 
+            if (existingItem != null)
             {
                 existingItem.QuantityInCart += ItemQuantity;
-                
+
             }
-            else 
+            else
             {
                 CartItemDisplayModel item = new CartItemDisplayModel
                 {
@@ -242,7 +242,7 @@ namespace TRMDesktopUI.ViewModels
                 };
                 Cart.Add(item);
             }
-            
+
             SelectedProduct.QuantityInStock -= ItemQuantity;
             ItemQuantity = 1;
             NotifyOfPropertyChange(() => SubTotal);
@@ -255,14 +255,14 @@ namespace TRMDesktopUI.ViewModels
         {
             get
             {
-                bool output = false;  
+                bool output = false;
 
                 // Make sure an item is selected
-                if(SelectedCartItem!= null && SelectedCartItem?.QuantityInCart>0) 
-                { 
+                if (SelectedCartItem != null && SelectedCartItem?.QuantityInCart > 1)
+                {
                     output = true;
                 }
-                            
+
                 return output;
             }
         }
@@ -270,15 +270,24 @@ namespace TRMDesktopUI.ViewModels
 
         public void RemoveFromCart()
         {
-            SelectedCartItem.Product.QuantityInStock += 1;
-            if(SelectedCartItem.QuantityInCart> 1) 
-            { 
-                SelectedCartItem.QuantityInCart -= 1;
+            int Removedquantity = 1;
+            if (SelectedCartItem.QuantityInCart > ItemQuantity)
+            {
+                Removedquantity = ItemQuantity;
             }
-            else
+            else if (SelectedCartItem.QuantityInCart >= 1)
+            {
+                Removedquantity = 1;
+            } 
+
+            SelectedCartItem.Product.QuantityInStock += Removedquantity;
+            SelectedCartItem.QuantityInCart -= Removedquantity;
+
+            if (SelectedCartItem.QuantityInCart == 0)
             {
                 Cart.Remove(SelectedCartItem);
             }
+
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
@@ -292,7 +301,7 @@ namespace TRMDesktopUI.ViewModels
             {
                 bool output = false;
                 // Make sure somthing in cart
-                if(Cart.Count > 0)
+                if (Cart.Count > 0)
                 {
                     output = true;
                 }
@@ -303,15 +312,15 @@ namespace TRMDesktopUI.ViewModels
 
         public async Task CheckOut()
         {
-            SaleModel sale= new SaleModel();
+            SaleModel sale = new SaleModel();
 
-            foreach(var item in Cart) 
+            foreach (var item in Cart)
             {
                 sale.SaleDetails.Add(new SaleDetailModel
                 {
                     ProductId = item.Product.Id,
                     Quantity = item.QuantityInCart
-                }); 
+                });
             }
 
             await _saleEndPoint.PostSale(sale);
